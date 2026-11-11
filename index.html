@@ -548,7 +548,7 @@ function activate(code){code=code.trim();if(!code)return Promise.resolve(null);
 if(PAY.api)return fetch(PAY.api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})}).then(function(r){return r.ok?r.json():null}).then(function(j){return j&&RANK[j.plan]>0?j.plan:null}).catch(function(){return null});
 if(!window.crypto||!crypto.subtle)return Promise.resolve(null);
 return sha256(code).then(function(h){var p=PAY.hashes[h];return RANK[p]>0?p:null})}
-var LAUNCH=false;
+var LAUNCH=true; /* true = tout débloqué, sans page d'offres (mode test). Remettre false quand Stripe est branché. */
 function currentOffer(){if(LAUNCH)return 'enterprise';var offer='';try{offer=localStorage.getItem(OFFER_KEY)||''}catch(e){}if(['student','basic','enterprise'].indexOf(offer)<0)offer=S&&['student','basic','enterprise'].indexOf(S.offer)>-1?S.offer:'';if(offer&&RANK[offer]>RANK[license()])offer='student';return offer}
 function storeOffer(offer){if(['student','basic','enterprise'].indexOf(offer)<0||(!LAUNCH&&RANK[offer]>RANK[license()]))return false;try{localStorage.setItem(OFFER_KEY,offer)}catch(e){return false}if(S){S.offer=offer;if(offer!=='enterprise')S.businessMode=false;save()}return true}
 function setTheme(theme){document.documentElement.setAttribute('data-theme',theme)}
